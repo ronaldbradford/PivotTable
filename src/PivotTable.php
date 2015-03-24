@@ -36,7 +36,7 @@ class PivotTable
             throw new \Exception('No columns statement');
         } // if $pivot_column_values_stmt
 
-        $cnt_column = explode(',', $summation_columns);
+        $cnt_column = array_keys($summation_columns);
         $initialized_summation_columns=array();
         $initialized_summation_columns_totals = array();
         for ($i=0; $i < count($cnt_column); $i++) {
@@ -44,24 +44,27 @@ class PivotTable
             $initialized_summation_columns_totals[] = $initialized_columns_totals;
         }
 
-        $row_data = array();
+        // Create Initial Header Rows 
+        // First Row is the pivot column values names
+        // Second Row is the summation columns per pivot column value
+        $row_headings_data = array();
+        $row_headings_summmation_names = array();
         foreach (array_values($pivot_row) as $pivot_row_heading) {
-            $row_data[] = $pivot_row_heading;
+            $row_headings_data[] = $pivot_row_heading;
+            $row_headings_summation_names[] = '';
         }
-        $row_column_data = array();
-        $row_column_data[] = '';
         foreach ($initialized_columns_values as $c => $n) {
             for ($i=0; $i < count($cnt_column); $i++) {
-                $row_data[] = $c;
-                $row_column_data[] = $cnt_column[$i];
+                $row_headings_data[] = $c;
+                $row_headings_summation_names[] = $summation_columns[$cnt_column[$i]];
             }
         }
-        $row_data[] = 'Total';
-        $row_column_data[] = '';
-        $data[] = $row_data;
-        if (count($cnt_column) > 1) {
-            $data[] = $row_column_data;
+        for ($i=0; $i < count($cnt_column); $i++) {
+            $row_headings_data[] = 'Total';
+            $row_headings_summation_names[] = $summation_columns[$cnt_column[$i]];
         }
+        $data[] = $row_headings_data;
+        $data[] = $row_headings_summation_names;
 
         $pivot_column_name=array_keys($pivot_column)[0];
         if ($data_stmt) {
