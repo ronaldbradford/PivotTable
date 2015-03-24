@@ -29,12 +29,18 @@ class SalesExample
 
 
         $columns_stmt = $con->prepare('SELECT DISTINCT sale_date FROM sale ORDER BY sale_date');
-        $data_stmt = $con->prepare('SELECT product_type, sale_date, SUM(amt) AS sum_amt, SUM(qty) AS sum_qty FROM   sale GROUP BY product_type, sale_date ORDER BY product_type, sale_date');
+        $data_sql  = 'SELECT product_type, sale_date, SUM(amt) AS sum_amt, SUM(qty) AS sum_qty ';
+        $data_sql .= 'FROM   sale ';
+        $data_sql .= 'GROUP BY product_type, sale_date ';
+        $data_sql .= 'ORDER BY product_type, sale_date ';
+        $data_stmt = $con->prepare($data_sql);
         $a = $pt->summarize($con, $columns_stmt, $data_stmt, 'product_type', 'sales_date', 'sum_amt', 'Product Type');
 
         $o = $pt->render($a);
 
-        if ($con) mysqli_close($con);
+        if ($con) {
+            mysqli_close($con);
+        }
 
         print $o;
     }
