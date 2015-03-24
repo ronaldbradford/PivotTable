@@ -2,6 +2,7 @@
 namespace PivotTable;
 
 require (__DIR__ . '/../src/PivotTable.php');
+require (__DIR__ . '/../src/Util.php');
 
 class SalesExample
 {
@@ -35,9 +36,15 @@ class SalesExample
         $data_sql .= 'ORDER BY product_type, sale_date ';
         $data_stmt = $con->prepare($data_sql);
         try {
-            $a = $pt->summarize($con, $columns_stmt, $data_stmt, 'product_type', 'sale_date', 'sum_qty,sum_amt', 'Product Type');
+            $pivot_row = array('product_type' => 'Product Type');
+            $pivot_column = array('sale_date' => 'Sale Date');
+            $summation_columns = array('sum_qty' => 'Qty','sum_amt' => 'Sales');
+            //$summation_columns = array('sum_qty' => 'Qty');
+            $a = $pt->summarize($con, $columns_stmt, $data_stmt, $pivot_row, $pivot_column, $summation_columns);
 
-            $o = $pt->render($a);
+            $decorator = array("table"=> "table table-condensed table-striped table-bordered table-text-center");
+            print '<h2>Product Type by Date Example <small>'.Util::downloadLink('demo1', $a).'</small></h2>';
+            $o = $pt->render($a, $decorator, count($summation_columns));
         } catch (Exception $e) {
             print $e->geteMessage();
             return;
