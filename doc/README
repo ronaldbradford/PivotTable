@@ -9,7 +9,7 @@ chmod +x phpunit.phar
 curl -OL https://getcomposer.org/composer.phar
 
 cd ${BASE_DIR}
-for FILE in `ls {src,test}/*.php`
+for FILE in `ls {src,tests}/*.php`
 do
   echo "${FILE}"
   php lib/phpcs.phar --standard=PSR2 --report-width=120 ${FILE}
