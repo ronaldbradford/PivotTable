@@ -162,16 +162,19 @@ class PivotTable
         return $rs;
     }
 
-    public function render($data, $decorator = array())
+    public function render($data, $decorator = array(), $summation_column_count)
     {
         $table_class = (isset($decorator['table']) ? $decorator['table'] : '');
         $pivot_row_class = (isset($decorator['pivot_row']) ? $decorator['pivot_row'] : 'aleft');
         $total_row_class = (isset($decorator['total_row']) ? $decorator['pivot_row'] : 'info');
         $output = '<table class="'. $table_class .'">';
-        $heading = true;
+        $first_heading_row = true;
         $extra = '';
         foreach ($data as $r) {
-            if ($heading) {
+            //  Keep a copy of the first heading line for later
+            if ($first_heading_row) {
+                $first_heading_row = false;
+                $heading = true;
                 $headerline = $r;
             }
             if ($r[0] == 'All') {
@@ -179,32 +182,37 @@ class PivotTable
                 $heading = true;
             }
             $output .= '<tr'.$extra.'>';
+
+
             $extra = '';
-            $l = count($r);
+            $l = count($r) - $summation_column_count;
             $p = 0;
             foreach ($r as $n => $v) {
                 $el = $heading ? 'h' : 'd';
                 $p++;
+                // Change element and select style for rirst column of row information
                 if ($p == 1) {
                     $extra = ' class="'.$pivot_row_class.'"';
                     $el = 'h';
                 } // First Column
-                if ($p == $l) {
-                    $extra = ' class="info"';
+                // Change element and select style for class column of row information
+                if ($p > $l) {
+                    $extra = ' class="'. $total_row_class.'"';
                     $el = 'h';
                 } // Last Row
                 $output .= '<t'.$el.$extra.'>'.$v.'</t'.$el.'>';
-                $extra='';
-                $el='d';
+                $extra = '';
+                $el = 'd';
             }
-            $heading=false;
+            $heading = false;
             $output .= '</tr>';
         } // foreach
 
+        // If there are more than 15 lines of output, repeat the heading line at bottom of table
         if (isset($headerline) && count($data) > 15) {
             $output .= '<tr>';
+            $el = 'h';
             foreach ($headerline as $n => $v) {
-                $el = 'h';
                 $output .= '<t'.$el.$extra.'>'.$v.'</t'.$el.'>';
             }
             $output .= '</tr>';
