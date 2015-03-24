@@ -6,6 +6,8 @@ curl -OL https://phar.phpunit.de/phpunit.phar
 chmod +x phpunit.phar
 
 
+curl -OL https://getcomposer.org/composer.phar
+
 cd ${BASE_DIR}
 for FILE in `ls {src,test}/*.php`
 do
