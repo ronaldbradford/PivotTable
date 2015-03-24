@@ -35,7 +35,7 @@ class SalesExample
         $data_sql .= 'ORDER BY product_type, sale_date ';
         $data_stmt = $con->prepare($data_sql);
         try {
-            $a = $pt->summarize($con, $columns_stmt, $data_stmt, 'product_type', 'sale_date', 'sum_amt', 'Product Type');
+            $a = $pt->summarize($con, $columns_stmt, $data_stmt, 'product_type', 'sale_date', 'sum_qty,sum_amt', 'Product Type');
 
             $o = $pt->render($a);
         } catch (Exception $e) {

@@ -34,8 +34,7 @@ class PivotTable
                 throw new \Exception('No results for columns');
             } // if $rs
         } else {
-            print "ERROR 2";
-            return $data;
+            throw new \Exception('No columns statement');
         } // if $columns_stmt
 
         $cnt_column = explode(',', $cnt_columns);
