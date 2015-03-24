@@ -1,0 +1,12 @@
+# Get the PSR 2 sniffer
+cd lib
+curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
+
+
+
+cd src
+for FILE in `ls *.php`
+do
+  echo "${FILE}"
+  php ../lib/phpcs.phar --standard=PSR2 --report-width=120 ${FILE}
+done
