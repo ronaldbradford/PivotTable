@@ -29,11 +29,12 @@ class PivotTable
                     $pre_columns[$row[0]] = '';
                     $pre_column_totals[$row[0]] = 0;
                 }
-                free($rs);
+                if ($rs) \mysqli_free_result($rs);
             } else {
-                return $data;
+                throw new \Exception('No results for columns');
             } // if $rs
         } else {
+            print "ERROR 2";
             return $data;
         } // if $columns_stmt
 
@@ -63,15 +64,15 @@ class PivotTable
         }
 
         if ($data_stmt) {
-            $rs = select($con, $data_stmt);
+            $rs = $this->select($con, $data_stmt);
 
-            if ($rs && $rs instanceof mysqli_result) {
+            if ($rs && $rs instanceof \mysqli_result) {
                 // Per row variables
                 $row_pivot='';
                 $row_total=0;
                 $row_columns = $columns;
 
-                while ($r = mysqli_fetch_assoc($rs)) {
+                while ($r = \mysqli_fetch_assoc($rs)) {
                     $current_pivot = $r[$pivot_column];
                     if ($row_pivot != $current_pivot) {   // A change in the pivot column
                         if ($row_pivot != '') { // i.e. not first time in this loop
@@ -96,7 +97,7 @@ class PivotTable
                     }
                     $row_total += $r[$cnt_column[0]];
                 } // while
-                free($rs);
+                if ($rs) \mysqli_free_result($rs);
 
                 if (isset($current_pivot)) {
                     $row_data = array();
@@ -144,7 +145,7 @@ class PivotTable
         }
         if (gettype($sql) == 'string') {
             $rs = $con->query($sql);
-        } elseif ($sql instanceof mysqli_stmt) {
+        } elseif ($sql instanceof \mysqli_stmt) {
             $sql->execute();
             $rs = $sql->get_result();
         } else {
