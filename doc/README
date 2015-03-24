@@ -1,12 +1,16 @@
 # Get the PSR 2 sniffer
 cd lib
 curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
+# Get PHPUnit
+curl -OL https://phar.phpunit.de/phpunit.phar
+chmod +x phpunit.phar
 
 
-
-cd src
-for FILE in `ls *.php`
+cd ${BASE_DIR}
+for FILE in `ls {src,test}/*.php`
 do
   echo "${FILE}"
-  php ../lib/phpcs.phar --standard=PSR2 --report-width=120 ${FILE}
+  php lib/phpcs.phar --standard=PSR2 --report-width=120 ${FILE}
 done
+
+lib/phpunit.phar --testdox tests
