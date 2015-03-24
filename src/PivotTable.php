@@ -5,12 +5,15 @@ namespace PivotTable;
 class PivotTable
 {
 
-    public function __construct() {
+    public function __construct()
+    {
     }
 
-    public function generate() {
+    public function generate()
+    {
     }
 
-    public function render() {
+    public function render()
+    {
     }
 }
