@@ -28,7 +28,9 @@ class PivotTable
                     $initialized_columns_values[$row[0]] = '';
                     $initialized_columns_totals[$row[0]] = 0;
                 }
-                if ($rs) \mysqli_free_result($rs);
+                if ($rs) {
+                    \mysqli_free_result($rs);
+                }
             } else {
                 throw new \Exception('No results for columns');
             } // if $rs
@@ -47,7 +49,7 @@ class PivotTable
             $summation_columns_totals[] = $initialized_columns_totals;
         }
 
-        // Create Initial Header Rows 
+        // Create Initial Header Rows
         // First Row is the pivot column values names
         // Second Row is the summation columns per pivot column value
         $row_headings_data = array();
@@ -109,7 +111,9 @@ class PivotTable
                         $summation_columns_totals[$i][$r[$pivot_column_name]] += $r[$cnt_column[$i]];
                     }
                 } // while
-                if ($rs) \mysqli_free_result($rs);
+                if ($rs) {
+                    \mysqli_free_result($rs);
+                }
 
                 if (isset($current_pivot)) {
                     $row_data = array();
@@ -170,7 +174,7 @@ class PivotTable
         return $rs;
     }
 
-    public function render($data, $decorator = array(), $summation_column_count)
+    public function render($data, $decorator, $summation_column_count)
     {
         $table_class = (isset($decorator['table']) ? $decorator['table'] : '');
         $pivot_row_class = (isset($decorator['pivot_row']) ? $decorator['pivot_row'] : 'aleft');
