@@ -11,23 +11,22 @@ class PivotTable
 
     public function summarize(
         $con,
-        $columns_stmt,
+        $pivot_column_values_stmt,
         $data_stmt,
-        $pivot_column,
+        $pivot_row,
         $name_column,
-        $cnt_columns,
-        $pivot_column_heading
+        $cnt_columns
     ) {
 
         $data = array();
-        if ($columns_stmt) {
-            $rs = $this->select($con, $columns_stmt);
+        if ($pivot_column_values_stmt) {
+            $rs = $this->select($con, $pivot_column_values_stmt);
             if ($rs) {
-                $pre_columns = array();
-                $pre_column_totals = array();
+                $initialized_columns_values = array();
+                $initialized_columns_totals = array();
                 while ($row = mysqli_fetch_row($rs)) {
-                    $pre_columns[$row[0]] = '';
-                    $pre_column_totals[$row[0]] = 0;
+                    $initialized_columns_values[$row[0]] = '';
+                    $initialized_columns_totals[$row[0]] = 0;
                 }
                 if ($rs) \mysqli_free_result($rs);
             } else {
@@ -35,21 +34,23 @@ class PivotTable
             } // if $rs
         } else {
             throw new \Exception('No columns statement');
-        } // if $columns_stmt
+        } // if $pivot_column_values_stmt
 
         $cnt_column = explode(',', $cnt_columns);
         $columns=array();
         $column_totals = array();
         for ($i=0; $i < count($cnt_column); $i++) {
-            $columns[] = $pre_columns;
-            $column_totals[] = $pre_column_totals;
+            $columns[] = $initialized_columns_values;
+            $column_totals[] = $initialized_columns_totals;
         }
 
         $row_data = array();
-        $row_data[] = $pivot_column_heading;
+        foreach (array_values($pivot_row) as $pivot_row_heading) {
+            $row_data[] = $pivot_row_heading;
+        }
         $row_column_data = array();
         $row_column_data[] = '';
-        foreach ($pre_columns as $c => $n) {
+        foreach ($initialized_columns_values as $c => $n) {
             for ($i=0; $i < count($cnt_column); $i++) {
                 $row_data[] = $c;
                 $row_column_data[] = $cnt_column[$i];
@@ -72,7 +73,10 @@ class PivotTable
                 $row_columns = $columns;
 
                 while ($r = \mysqli_fetch_assoc($rs)) {
-                    $current_pivot = $r[$pivot_column];
+                    $current_pivot='';
+                    foreach (array_keys($pivot_row) as $pivot_row_column) {
+                        $current_pivot .= $r[$pivot_row_column] . "\t";
+                    }
                     if ($row_pivot != $current_pivot) {   // A change in the pivot column
                         if ($row_pivot != '') { // i.e. not first time in this loop
                             $row_data = array();
@@ -112,8 +116,6 @@ class PivotTable
                 } // Cater for empty result set
             } // if $rs
         } // $data_stmt
-
-
 
         $row_data = array();
         $row_data[] = 'All';
@@ -156,33 +158,36 @@ class PivotTable
         return $rs;
     }
 
-    public function render($data)
+    public function render($data, $decorator = array())
     {
-        $output = '<table>';
-        $heading=true;
-        $extra='';
+        $table_class = (isset($decorator['table']) ? $decorator['table'] : '');
+        $pivot_row_class = (isset($decorator['pivot_row']) ? $decorator['pivot_row'] : 'aleft');
+        $total_row_class = (isset($decorator['total_row']) ? $decorator['pivot_row'] : 'info');
+        $output = '<table class="'. $table_class .'">';
+        $heading = true;
+        $extra = '';
         foreach ($data as $r) {
             if ($heading) {
-                $headerline=$r;
+                $headerline = $r;
             }
             if ($r[0] == 'All') {
-                $extra=' class="info"';
-                $heading=true;
+                $extra = ' class="'.$total_row_class.'"';
+                $heading = true;
             }
             $output .= '<tr'.$extra.'>';
-            $extra='';
+            $extra = '';
             $l = count($r);
             $p = 0;
             foreach ($r as $n => $v) {
                 $el = $heading ? 'h' : 'd';
                 $p++;
                 if ($p == 1) {
-                    $extra=' class="aleft"';
-                    $el='h';
+                    $extra = ' class="'.$pivot_row_class.'"';
+                    $el = 'h';
                 } // First Column
                 if ($p == $l) {
-                    $extra=' class="info"';
-                    $el='h';
+                    $extra = ' class="info"';
+                    $el = 'h';
                 } // Last Row
                 $output .= '<t'.$el.$extra.'>'.$v.'</t'.$el.'>';
                 $extra='';
