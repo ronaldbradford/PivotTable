@@ -34,13 +34,19 @@ class SalesExample
         $data_sql .= 'GROUP BY product_type, sale_date ';
         $data_sql .= 'ORDER BY product_type, sale_date ';
         $data_stmt = $con->prepare($data_sql);
-        $a = $pt->summarize($con, $columns_stmt, $data_stmt, 'product_type', 'sales_date', 'sum_amt', 'Product Type');
+        try {
+            $a = $pt->summarize($con, $columns_stmt, $data_stmt, 'product_type', 'sale_date', 'sum_amt', 'Product Type');
 
-        $o = $pt->render($a);
-
-        if ($con) {
-            mysqli_close($con);
+            $o = $pt->render($a);
+        } catch (Exception $e) {
+            print $e->geteMessage();
+            return;
+        } finally {
+            if ($con) {
+                mysqli_close($con);
+            }
         }
+
 
         print $o;
     }
