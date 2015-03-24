@@ -15,7 +15,7 @@ class PivotTable
         $data_stmt,
         $pivot_row,
         $name_column,
-        $cnt_columns
+        $summation_columns
     ) {
 
         $data = array();
@@ -36,12 +36,12 @@ class PivotTable
             throw new \Exception('No columns statement');
         } // if $pivot_column_values_stmt
 
-        $cnt_column = explode(',', $cnt_columns);
-        $columns=array();
-        $column_totals = array();
+        $cnt_column = explode(',', $summation_columns);
+        $initialized_summation_columns=array();
+        $initialized_summation_columns_totals = array();
         for ($i=0; $i < count($cnt_column); $i++) {
-            $columns[] = $initialized_columns_values;
-            $column_totals[] = $initialized_columns_totals;
+            $initialized_summation_columns[] = $initialized_columns_values;
+            $initialized_summation_columns_totals[] = $initialized_columns_totals;
         }
 
         $row_data = array();
@@ -70,7 +70,7 @@ class PivotTable
                 // Per row variables
                 $row_pivot='';
                 $row_total=0;
-                $row_columns = $columns;
+                $row_columns = $initialized_summation_columns;
 
                 while ($r = \mysqli_fetch_assoc($rs)) {
                     $current_pivot='';
@@ -92,11 +92,11 @@ class PivotTable
                         } // $row_pivot != ''
                         $row_pivot = $current_pivot;
                         $row_total=0;
-                        $row_columns = $columns;
+                        $row_columns = $initialized_summation_columns;
                     } // != $current_pivot
                     for ($i=0; $i < count($cnt_column); $i++) {
                         $row_columns[$i][$r[$name_column]] = $r[$cnt_column[$i]];
-                        $column_totals[$i][$r[$name_column]] += $r[$cnt_column[$i]];
+                        $initialized_summation_columns_totals[$i][$r[$name_column]] += $r[$cnt_column[$i]];
                     }
                     $row_total += $r[$cnt_column[0]];
                 } // while
@@ -121,9 +121,9 @@ class PivotTable
         $row_data[] = 'All';
         $row_total=0;
 
-        foreach (array_keys($column_totals[0]) as $k) {
+        foreach (array_keys($initialized_summation_columns_totals[0]) as $k) {
             for ($i=0; $i < count($cnt_column); $i++) {
-                $row_data[] = $column_totals[$i][$k];
+                $row_data[] = $initialized_summation_columns_totals[$i][$k];
             }
             $row_total += $n;
         }
