@@ -14,7 +14,7 @@ class PivotTable
         $pivot_column_values_stmt,
         $data_stmt,
         $pivot_row,
-        $name_column,
+        $pivot_column,
         $summation_columns
     ) {
 
@@ -63,6 +63,7 @@ class PivotTable
             $data[] = $row_column_data;
         }
 
+        $pivot_column_name=array_keys($pivot_column)[0];
         if ($data_stmt) {
             $rs = $this->select($con, $data_stmt);
 
@@ -95,8 +96,8 @@ class PivotTable
                         $row_columns = $initialized_summation_columns;
                     } // != $current_pivot
                     for ($i=0; $i < count($cnt_column); $i++) {
-                        $row_columns[$i][$r[$name_column]] = $r[$cnt_column[$i]];
-                        $initialized_summation_columns_totals[$i][$r[$name_column]] += $r[$cnt_column[$i]];
+                        $row_columns[$i][$r[$pivot_column_name]] = $r[$cnt_column[$i]];
+                        $initialized_summation_columns_totals[$i][$r[$pivot_column_name]] += $r[$cnt_column[$i]];
                     }
                     $row_total += $r[$cnt_column[0]];
                 } // while
