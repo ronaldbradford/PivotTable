@@ -11,32 +11,26 @@ class PivotTable
 
     public function summarize(
         $con,
-        $pivot_column_values_stmt,
         $data_stmt,
+        $pivot_columns_data,
         $pivot_row,
         $pivot_column,
         $summation_columns
     ) {
 
         $data = array();
-        if ($pivot_column_values_stmt) {
-            $rs = $this->select($con, $pivot_column_values_stmt);
-            if ($rs) {
-                $initialized_columns_values = array();
-                $initialized_columns_totals = array();
-                while ($row = mysqli_fetch_row($rs)) {
-                    $initialized_columns_values[$row[0]] = '';
-                    $initialized_columns_totals[$row[0]] = 0;
-                }
-                if ($rs) {
-                    \mysqli_free_result($rs);
-                }
-            } else {
-                throw new \Exception('No results for columns');
-            } // if $rs
+        $pivot_column_name=array_keys($pivot_column)[0];
+        if ($pivot_columns_data && is_array($pivot_columns_data)) {
+            $initialized_columns_values = array();
+            $initialized_columns_totals = array();
+            foreach ($pivot_columns_data as $row) {
+                // This could become a configurable option, blank or 0 for empty cell value
+                $initialized_columns_values[$row[$pivot_column_name]] = '';
+                $initialized_columns_totals[$row[$pivot_column_name]] = 0;
+            }
         } else {
-            throw new \Exception('No columns statement');
-        } // if $pivot_column_values_stmt
+            throw new \Exception('No pivot column results');
+        } // if $pivot_columns_data
 
         $initialized_summation_columns=array();
         $initialized_summation_column_totals=array();
@@ -71,9 +65,8 @@ class PivotTable
         $data[] = $row_headings_data;
         $data[] = $row_headings_summation_names;
 
-        $pivot_column_name=array_keys($pivot_column)[0];
         if ($data_stmt) {
-            $rs = $this->select($con, $data_stmt);
+            $rs = $con->select($data_stmt,array('product_type','sale_date','sum_qty','sum_amt'));
 
             if ($rs && $rs instanceof \mysqli_result) {
                 // Per row variables
