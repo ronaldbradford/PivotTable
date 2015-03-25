@@ -34,6 +34,11 @@ class Database
         }
     }
 
+    public function prepare($sql) 
+    {
+      return $this->con->prepare($sql);
+    }
+
     public function select($sql, $columns)
     {
         if (!$this->con) {
@@ -46,7 +51,7 @@ class Database
             $result_set = $this->con->query($sql);
         } elseif ($sql instanceof \mysqli_stmt) {
             $sql->execute();
-            $result_set = $this->sql->get_result();
+            $result_set = $sql->get_result();
         } else {
             return;
         }
