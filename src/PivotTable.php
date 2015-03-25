@@ -10,8 +10,7 @@ class PivotTable
     }
 
     public function summarize(
-        $con,
-        $data_stmt,
+        $results_data,
         $pivot_columns_data,
         $pivot_row,
         $pivot_column,
@@ -65,16 +64,14 @@ class PivotTable
         $data[] = $row_headings_data;
         $data[] = $row_headings_summation_names;
 
-        if ($data_stmt) {
-            $rs = $con->select($data_stmt, array('product_type','sale_date','sum_qty','sum_amt'));
+        if ($results_data && is_array($results_data)) {
 
-            if ($rs && $rs instanceof \mysqli_result) {
                 // Per row variables
                 $row_pivot   = '';
                 $row_columns = $initialized_summation_columns;
                 $row_totals  = $initialized_summation_column_totals;
 
-                while ($r = \mysqli_fetch_assoc($rs)) {
+                foreach ($results_data as $r) {
                     $current_pivot='';
                     foreach (array_keys($pivot_row) as $pivot_row_column) {
                         $current_pivot .= $r[$pivot_row_column] . "\t";
@@ -104,9 +101,6 @@ class PivotTable
                         $summation_columns_totals[$i][$r[$pivot_column_name]] += $r[$cnt_column[$i]];
                     }
                 } // while
-                if ($rs) {
-                    \mysqli_free_result($rs);
-                }
 
                 if (isset($current_pivot)) {
                     $row_data = array();
@@ -122,8 +116,7 @@ class PivotTable
                     }
                     $data[] = $row_data;
                 } // Cater for empty result set
-            } // if $rs
-        } // $data_stmt
+        } // if $results_data
 
         $row_data = array();
         $row_data[] = 'All';
