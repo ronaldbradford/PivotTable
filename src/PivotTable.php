@@ -150,30 +150,6 @@ class PivotTable
         return $data;
     }
 
-    private function select(
-        $con,
-        $sql
-    ) {
-        if (empty($sql)) {
-            return;
-        }
-        if (empty($con)) {
-            return;
-        }
-        if (gettype($sql) == 'string') {
-            $rs = $con->query($sql);
-        } elseif ($sql instanceof \mysqli_stmt) {
-            $sql->execute();
-            $rs = $sql->get_result();
-        } else {
-            return;
-        }
-        if (!$rs) {
-            return;
-        }
-        return $rs;
-    }
-
     public function render($data, $decorator, $summation_column_count)
     {
         $table_class = (isset($decorator['table']) ? $decorator['table'] : '');
