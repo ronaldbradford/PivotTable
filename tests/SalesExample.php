@@ -10,7 +10,7 @@ class SalesExample
 
     public function __construct()
     {
-        $pt = new PivotTable();
+        $pt = new PivotTable(array('heading_all' => 'Grand Total'));
 
 
         $host = 'localhost';
@@ -45,8 +45,8 @@ class SalesExample
 
             $decorator = array(
               'table' => 'table table-condensed table-striped table-bordered table-text-center',
-              'total_row' => 'info',
-              'pivot_row' => 'success aleft'
+              'total_row' => 'info text-center',
+              'pivot_row' => 'success text-left'
             );
             print '<h2>Product Type by Date Example <small>'.Util::downloadLink('demo1', $a).'</small></h2>';
             $o = $pt->render($a, $decorator, count($summation_columns));

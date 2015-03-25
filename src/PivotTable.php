@@ -5,8 +5,19 @@ namespace PivotTable;
 class PivotTable
 {
 
-    public function __construct()
+    private $heading_all   = 'All';
+    private $heading_total = 'Total';
+
+    public function __construct($settings = array())
     {
+        if ($settings) {
+            if (isset($settings['heading_all'])) {
+                $this->heading_all = $settings['heading_all'];
+            }
+            if (isset($settings['heading_total'])) {
+                $this->heading_total = $settings['heading_total'];
+            }
+        }
     }
 
     public function summarize(
@@ -58,7 +69,7 @@ class PivotTable
             }
         }
         for ($i=0; $i < count(array_keys($summation_columns)); $i++) {
-            $row_headings_data[] = 'Total';
+            $row_headings_data[] = $this->heading_total;
             $row_headings_summation_names[] = $summation_columns[$cnt_column[$i]];
         }
         $data[] = $row_headings_data;
@@ -118,7 +129,7 @@ class PivotTable
         } // if $results_data
 
         $row_data = array();
-        $row_data[] = 'All';
+        $row_data[] = $this->heading_all;
         $row_totals = $initialized_summation_column_totals;
 
         foreach (array_keys($summation_columns_totals[0]) as $k) {
@@ -138,8 +149,9 @@ class PivotTable
     public function render($data, $decorator, $summation_column_count)
     {
         $table_class = (isset($decorator['table']) ? $decorator['table'] : '');
-        $pivot_row_class = (isset($decorator['pivot_row']) ? $decorator['pivot_row'] : 'aleft');
+        $pivot_row_class = (isset($decorator['pivot_row']) ? $decorator['pivot_row'] : 'text-left');
         $total_row_class = (isset($decorator['total_row']) ? $decorator['total_row'] : 'info');
+        $column_class = (isset($decorator['column_class']) ? $decorator['total_row'] : 'text-center');
         $output = '<table class="'. $table_class .'">';
         $first_heading_row = true;
         $extra = '';
@@ -150,7 +162,7 @@ class PivotTable
                 $heading = true;
                 $headerline = $r;
             }
-            if ($r[0] == 'All') {
+            if ($r[0] == $this->heading_all) {
                 $extra = ' class="'.$total_row_class.'"';
                 $heading = true;
             }
@@ -164,18 +176,18 @@ class PivotTable
                 $el = $heading ? 'h' : 'd';
                 $p++;
                 // Change element and select style for rirst column of row information
-                if ($p == 1) {
+                if ($p == 1) { // First Column
                     $extra = ' class="'.$pivot_row_class.'"';
                     $el = 'h';
-                } // First Column
-                // Change element and select style for class column of row information
-                if ($p > $l) {
+                } elseif ($p > $l) { // Last Column 
                     $extra = ' class="'. $total_row_class.'"';
                     $el = 'h';
-                } // Last Row
+                }  elseif (!$heading) {
+                    $extra = !empty($column_class) ? ' class="'. $column_class.'"' : '';
+                    $el = 'd';
+                }
                 $output .= '<t'.$el.$extra.'>'.$v.'</t'.$el.'>';
                 $extra = '';
-                $el = 'd';
             }
             $heading = false;
             $output .= '</tr>';

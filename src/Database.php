@@ -1,5 +1,4 @@
 <?php
-
 namespace PivotTable;
 
 class Database
