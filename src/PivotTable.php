@@ -147,7 +147,7 @@ class PivotTable
     {
         $table_class = (isset($decorator['table']) ? $decorator['table'] : '');
         $pivot_row_class = (isset($decorator['pivot_row']) ? $decorator['pivot_row'] : 'aleft');
-        $total_row_class = (isset($decorator['total_row']) ? $decorator['pivot_row'] : 'info');
+        $total_row_class = (isset($decorator['total_row']) ? $decorator['total_row'] : 'info');
         $output = '<table class="'. $table_class .'">';
         $first_heading_row = true;
         $extra = '';
