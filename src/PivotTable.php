@@ -65,57 +65,56 @@ class PivotTable
         $data[] = $row_headings_summation_names;
 
         if ($results_data && is_array($results_data)) {
+            // Per row variables
+            $row_pivot   = '';
+            $row_columns = $initialized_summation_columns;
+            $row_totals  = $initialized_summation_column_totals;
 
-                // Per row variables
-                $row_pivot   = '';
-                $row_columns = $initialized_summation_columns;
-                $row_totals  = $initialized_summation_column_totals;
+            foreach ($results_data as $r) {
+                $current_pivot='';
+                foreach (array_keys($pivot_row) as $pivot_row_column) {
+                    $current_pivot .= $r[$pivot_row_column] . "\t";
+                }
+                if ($row_pivot != $current_pivot) {   // A change in the pivot column
+                    if ($row_pivot != '') { // i.e. not first time in this loop
+                        $row_data = array();
+                        $row_data[] = $row_pivot;
 
-                foreach ($results_data as $r) {
-                    $current_pivot='';
-                    foreach (array_keys($pivot_row) as $pivot_row_column) {
-                        $current_pivot .= $r[$pivot_row_column] . "\t";
-                    }
-                    if ($row_pivot != $current_pivot) {   // A change in the pivot column
-                        if ($row_pivot != '') { // i.e. not first time in this loop
-                            $row_data = array();
-                            $row_data[] = $row_pivot;
-
-                            foreach (array_keys($row_columns[0]) as $k) {
-                                for ($i=0; $i < count(array_keys($summation_columns)); $i++) {
-                                    $row_data[] = $row_columns[$i][$k];
-                                }
+                        foreach (array_keys($row_columns[0]) as $k) {
+                            for ($i=0; $i < count(array_keys($summation_columns)); $i++) {
+                                $row_data[] = $row_columns[$i][$k];
                             }
-                            for ($i=0; $i < count(array_keys($row_totals)); $i++) {
-                                $row_data[] = $row_totals[$i];
-                            }
-                            $data[] = $row_data;
-                        } // $row_pivot != ''
-                        $row_pivot   = $current_pivot;
-                        $row_columns = $initialized_summation_columns;
-                        $row_totals  = $initialized_summation_column_totals;
-                    } // != $current_pivot
-                    for ($i=0; $i < count(array_keys($summation_columns)); $i++) {
-                        $row_columns[$i][$r[$pivot_column_name]] = $r[$cnt_column[$i]];
-                        $row_totals[$i] += $r[$cnt_column[$i]];
-                        $summation_columns_totals[$i][$r[$pivot_column_name]] += $r[$cnt_column[$i]];
-                    }
-                } // while
-
-                if (isset($current_pivot)) {
-                    $row_data = array();
-                    $row_data[] = $row_pivot;
-
-                    foreach (array_keys($row_columns[0]) as $k) {
-                        for ($i=0; $i < count(array_keys($summation_columns)); $i++) {
-                            $row_data[] = $row_columns[$i][$k];
                         }
+                        for ($i=0; $i < count(array_keys($row_totals)); $i++) {
+                            $row_data[] = $row_totals[$i];
+                        }
+                        $data[] = $row_data;
+                    } // $row_pivot != ''
+                    $row_pivot   = $current_pivot;
+                    $row_columns = $initialized_summation_columns;
+                    $row_totals  = $initialized_summation_column_totals;
+                } // != $current_pivot
+                for ($i=0; $i < count(array_keys($summation_columns)); $i++) {
+                    $row_columns[$i][$r[$pivot_column_name]] = $r[$cnt_column[$i]];
+                    $row_totals[$i] += $r[$cnt_column[$i]];
+                    $summation_columns_totals[$i][$r[$pivot_column_name]] += $r[$cnt_column[$i]];
+                }
+            } // while
+
+            if (isset($current_pivot)) {
+                $row_data = array();
+                $row_data[] = $row_pivot;
+
+                foreach (array_keys($row_columns[0]) as $k) {
+                    for ($i=0; $i < count(array_keys($summation_columns)); $i++) {
+                        $row_data[] = $row_columns[$i][$k];
                     }
-                    for ($i=0; $i < count(array_keys($row_totals)); $i++) {
-                        $row_data[] = $row_totals[$i];
-                    }
-                    $data[] = $row_data;
-                } // Cater for empty result set
+                }
+                for ($i=0; $i < count(array_keys($row_totals)); $i++) {
+                    $row_data[] = $row_totals[$i];
+                }
+                $data[] = $row_data;
+            } // Cater for empty result set
         } // if $results_data
 
         $row_data = array();
