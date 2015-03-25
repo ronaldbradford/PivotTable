@@ -66,7 +66,7 @@ class PivotTable
         $data[] = $row_headings_summation_names;
 
         if ($data_stmt) {
-            $rs = $con->select($data_stmt,array('product_type','sale_date','sum_qty','sum_amt'));
+            $rs = $con->select($data_stmt, array('product_type','sale_date','sum_qty','sum_amt'));
 
             if ($rs && $rs instanceof \mysqli_result) {
                 // Per row variables

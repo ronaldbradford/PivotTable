@@ -34,9 +34,9 @@ class Database
         }
     }
 
-    public function prepare($sql) 
+    public function prepare($sql)
     {
-      return $this->con->prepare($sql);
+        return $this->con->prepare($sql);
     }
 
     public function select($sql, $columns)
