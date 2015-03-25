@@ -47,6 +47,9 @@ class Database
         if (empty($sql)) {
             return;
         }
+        if (empty($columns) || !is_array($columns) || count($columns) == 0) {
+            return;
+        }
         if (gettype($sql) == 'string') {
             $result_set = $this->con->query($sql);
         } elseif ($sql instanceof \mysqli_stmt) {
