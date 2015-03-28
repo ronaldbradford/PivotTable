@@ -179,10 +179,10 @@ class PivotTable
                 if ($p == 1) { // First Column
                     $extra = ' class="'.$pivot_row_class.'"';
                     $el = 'h';
-                } elseif ($p > $l) { // Last Column 
+                } elseif ($p > $l) { // Last Column
                     $extra = ' class="'. $total_row_class.'"';
                     $el = 'h';
-                }  elseif (!$heading) {
+                } elseif (!$heading) {
                     $extra = !empty($column_class) ? ' class="'. $column_class.'"' : '';
                     $el = 'd';
                 }
