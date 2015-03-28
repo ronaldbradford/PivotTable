@@ -151,7 +151,7 @@ class PivotTable
         $table_class = (isset($decorator['table']) ? $decorator['table'] : '');
         $pivot_row_class = (isset($decorator['pivot_row']) ? $decorator['pivot_row'] : 'text-left');
         $total_row_class = (isset($decorator['total_row']) ? $decorator['total_row'] : 'info');
-        $column_class = (isset($decorator['column_class']) ? $decorator['total_row'] : 'text-center');
+        $column_class = (isset($decorator['column']) ? $decorator['column'] : 'text-center');
         $output = '<table class="'. $table_class .'">';
         $first_heading_row = true;
         $extra = '';
